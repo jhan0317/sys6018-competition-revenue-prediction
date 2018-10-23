@@ -7,13 +7,13 @@ import json
 import numpy as np
 import pandas as pd
 from pandas.io.json import json_normalize
-import lightgbm as lgb
+import lightgbm as lgb     # The installation is a little bit tricky
 from sklearn import preprocessing
 import sys
-from sklearn import metrics
 
-'packagename' in sys.modules #True
-
+# The dataset after loading is saved into pkl file in order to speed up
+# read-in.
+# Run code starting from line 35
 def load_df(csv_path='train.csv', nrows=None):
     JSON_COLUMNS = ['device', 'geoNetwork', 'totals', 'trafficSource']
     
@@ -29,14 +29,13 @@ def load_df(csv_path='train.csv', nrows=None):
     print(f"Loaded {os.path.basename(csv_path)}. Shape: {df.shape}")
     return df
 
-print(os.listdir())
-
 train_df = load_df()
 test_df = load_df("test.csv")
 
+# Start running program here
+train_df = pd.read_pickle("train.pkl")
+test_df = pd.read_pickle("test.pkl")
 
-train_df.to_pickle("train.pkl")
-test_df.to_pickle("test.pkl")
 
 train_df["totals.transactionRevenue"] = train_df["totals.transactionRevenue"].astype('float')
 
