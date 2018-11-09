@@ -84,6 +84,32 @@ splineMSE
 rf = RandomForestRegressor(max_depth=20, random_state=42, n_estimators=100)
 rf.fit(array_train, array_y)
 
+# Feature importance
+# Very interesting. The top 14 important features are not consistent
+# with the top 14 correlated features.
+
+dic = {}
+for feature, importance in zip(x_train.columns, rf.feature_importances_):
+    dic[feature] = importance 
+feature_importance = pd.DataFrame.from_dict(dic, orient='index', columns=['Importance'])
+feature_importance.sort_values(by = 'Importance',ascending=False).index[:15]
+#                                            Importance
+# totals.pageviews                             0.318297
+# totals.hits                                  0.139302
+# visitNumber                                  0.068849
+# g.country_United States                      0.058418
+# totals.newVisits                             0.019308
+# d.operatingSystem_Macintosh                  0.018313
+# t.source_mall.googleplex.com                 0.017421
+# month_Dec                                    0.014514
+# month_Aug                                    0.014007
+# month_May                                    0.013773
+# month_Jun                                    0.013259
+# d.operatingSystem_Windows                    0.013082
+# month_Apr                                    0.013076
+# g.metro_San Francisco-Oakland-San Jose CA    0.012845
+# t.isTrueDirect                               0.012820
+
 # Since it is too slow to do the k cross validation for random forest,
 # just use validation set to test the performance.
 preds_val = rf.predict(array_val)
