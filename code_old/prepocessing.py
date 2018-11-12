@@ -8,7 +8,6 @@ import numpy as np
 pd.set_option('display.max_columns', 20)
 
 # Reads in raw dataset
-os.chdir("/Users/chloe/Desktop/UVa/Courses/SYS6018/Exercises/Kaggle/Google/data")
 raw_train = pd.read_csv("train.csv")  # (903653, 55)
 raw_test = pd.read_csv("test.csv")    # (804684, 53)
 n_train = len(raw_train)
@@ -19,7 +18,7 @@ y_train = raw_train['totals.transactionRevenue']
 all_data = pd.concat([x_train, raw_test], sort=False, ignore_index=True)
 
 # Drop the columns that are only unique to each visitor
-# Not sure if we should remove the visitStartTime ?????????????
+# Not sure if we should remove the visitStartTime 
 all_data = all_data.drop(['sessionId', 'visitId', 'visitStartTime'], axis=1)
 
 # Some column names are too long and share same prefix, so we change them to short names.
@@ -68,7 +67,7 @@ get_na_rate(all_data)
 # totals.pageviews                      239  0.000140
 
 # t.campaignCode, t.adContent, t.adwords... contain more than 90% of NA Value
-# Don't know how to deal with them ???????????
+# Don't know how to deal with them 
 # Try dropping them first
 all_data['t.isAdwords'] = all_data['t.adwordsClickInfo.adNetworkType'].notnull().astype(int)
 all_data = all_data.drop(['t.campaignCode', 't.adContent', 't.adwordsClickInfo.adNetworkType',
