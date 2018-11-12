@@ -6,7 +6,6 @@ from sklearn.model_selection import KFold
 from sklearn.linear_model import LinearRegression,Lasso,Ridge
 from sklearn.ensemble import RandomForestRegressor
 from pyearth import Earth
-from sklearn.svm import SVR
 
 x_train = pd.read_csv("x_train.csv")
 x_val = pd.read_csv("x_validation.csv")
@@ -79,7 +78,6 @@ splineMSE = np.mean((preds_val - array_y_val)**2)
 splineMSE
 # 3.5848521191901126
 
-
 # 5. Random Forest    
 rf = RandomForestRegressor(max_depth=20, random_state=42, n_estimators=100)
 rf.fit(array_train, array_y)
@@ -116,10 +114,6 @@ preds_val = rf.predict(array_val)
 rfMSE = np.mean((preds_val-array_y_val)**2)
 rfMSE
 # 3.0893678915112712
-
-# 6. SVM
-clf = SVR(gamma='scale', C=1.0, epsilon=0.2)
-clf.fit(array_train, array_y)   
 
 # Final submission
 # Since it seems the random forest achieves the lowest validation MSE,
