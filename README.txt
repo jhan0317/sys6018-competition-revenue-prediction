@@ -13,20 +13,27 @@ Have at MINIMUM one parametric model:
 3. Random forest
 4. Nonlinear SVM
 
-# Bonus
+# BONUS
 Get a good score on the parametric linear model modeling for bonus credit
 
 # RESULTS
 Random forest: 1.54 (old datasets), 1.77 (new datasets)
 
 # FILES
-Code: All of the code.
-Data: All of the cleaned data.
-Final_submission: All of the final submissions for Kaggle
-Large-size datasets: Some datasets are too large to be uploaded to github and are stored in Google Drive.
-                     https://drive.google.com/open?id=1M1bk-_DDEJxfOb7HrCpxgM712CoAm9zU
+Code:
+The competition has changed rules several days ago. We have made submissions before and after the change.
+Therefore we split the code into two files: 
+code_old: contains the code applied to the original datasets, 
+code_new: contains the code applied to the updated datasets.
+final_submission: All of the final submissions for Kaggle
 
-# Code
+# DATA:
+Most datasets are too large to be uploaded to gitHub. We decided to store all the data in the Google Drive.
+https://drive.google.com/open?id=1M1bk-_DDEJxfOb7HrCpxgM712CoAm9zU
+                     
+# code_old
+# Uses data in the old_data folder in Drive.
+# JSON_formatting.py: Reads in the raw dataset 
 # initial_data_analysis.py: Reads in the raw dataset and finds trends in the text data, specifically in relation to the 'age' variable
 # data_cleaning.py: Reads in the raw dataset and conducts data prepocessing
 # text_mining.py: Reads in the raw dataset, aggregates the dataset and conducts basic text cleaning
