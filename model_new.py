@@ -2,15 +2,12 @@
 
 import pandas as pd
 import numpy as np
-import seaborn as sns
 from sklearn.model_selection import KFold
-from sklearn.linear_model import LinearRegression,Lasso,Ridge
+from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from pyearth import Earth
-from sklearn.svm import SVR
-import lightgbm as lgb  
-from sklearn.model_selection import RandomizedSearchCV
-from sklearn import preprocessing
+from sklearn.metrics import mean_squared_error
+from math import sqrt
 
 # Reads in all data
 x_train = pd.read_csv("../data/x_train_v2.csv")
@@ -18,7 +15,6 @@ x_val = pd.read_csv("../data/x_validation_v2.csv")
 x_test = pd.read_csv("../data/x_test_v2.csv")
 y_train = pd.read_csv("../data/y_train_v2.csv", names=['revenue'])
 y_val = pd.read_csv("../data/y_validation_v2.csv", names=['revenue'])
-
 raw_test_id = pd.read_csv("../data/test_df_v2.csv", usecols=['fullVisitorId'], dtype={'fullVisitorId': str})
 raw_test_id = raw_test_id['fullVisitorId'].values
 
@@ -30,6 +26,10 @@ array_x_val = np.array(x_val)
 array_y_val = np.array(np.log1p(y_val))
 array_x_test = np.array(x_test)
 
+# Concatenates the training set and validation set together in order to
+# train the final model
+array_x_all = np.concatenate((array_x_train,array_x_val),axis=0)  
+array_y_all = np.concatenate((array_y_train,array_y_val),axis=0)
 
 # Cross Validation
 # We use the kFold package to automatically generate the index of validation
@@ -61,47 +61,54 @@ top
 #       dtype='object')
 
 # 1. Ordinary Least Regression
+# OLS using all the variables
 ols = LinearRegression()
 olsMSE = kFoldValidation(5, ols, array_x_train, array_y_train)
 olsMSE
 # array([2.7911842 , 2.76834881, 2.84893447, 2.78335565, 2.73966849])
 
-# 2. Ridge Regression
-ridge = Ridge(alpha=0.1)
-ridgeMSE = kFoldValidation(5, ridge, array_x_train, array_y_train)
-ridgeMSE
-# array([2.79118241, 2.76834784, 2.84894027, 2.78335797, 2.73967441])
+# OLS using only the 14 top correlated variables
+sub_x_train = x_train[top[1:]]
+array_x_sub = np.array(sub_x_train)
+olsMSE = kFoldValidation(5, ols, array_x_sub, array_y_train)
+olsMSE
+# array([2.82931072, 2.80517518, 2.88589756, 2.82362708, 2.78061219])
+# It seems that the model using all variables performs better
 
-# 3. Lasso Regression
-# Since it is too slow to do the k cross validation for lasso regression,
-# just use validation set to test the performance.
-lasso = Lasso(alpha=0.01)
-lasso.fit(array_x_train, array_y_train)
-preds_val = lasso.predict(array_x_val)
-lassoMSE = np.mean((preds_val - array_y_val.ravel())**2)
-lassoMSE
-# 2.4237713414744664
 
-# 4. Spline      Cannot run on new datasets ??????????????
+# 2. Spline    
 # Since it is too slow to do the k cross validation for spline,
 # just use validation set to test the performance.
 spline = Earth()
-sub_cols = list(top[1:])
+sub_cols = list(top[1:])   # Uses highly-correlated variables to build the model
 sub_x_train = x_train[sub_cols]
 array_sub_x = np.array(sub_x_train)
 spline.fit(sub_x_train, y_train)
-preds_val = spline.predict(array_x_val)
-splineMSE = np.mean((preds_val - array_y_val.ravel())**2)
+preds_val = spline.predict(x_val[sub_cols])
+splineMSE = np.mean((preds_val - array_y_val.ravel())**2)   # Calculates the mean squared error
 splineMSE
-# 3.5848521191901126
+# 2.457458862928802
 
-
-# 5. Random Forest    
+# 3. Random Forest    
+# Since it is too slow to do the k cross validation for random forest,
+# just use validation set to test the performance.
+# Builds the model with 50 trees
 rf = RandomForestRegressor(max_depth=20, random_state=42, n_estimators=50)
 rf.fit(array_x_train, array_y_train.ravel())
+preds_val = rf.predict(array_x_val)
+rfMSE = np.mean((preds_val-array_y_val.ravel())**2)  # Calculates the mean squared error
+rfMSE
+# 2.23321410793836 
 
-# Search the best random forest
-#rf_random = RandomizedSearchCV(estimator = rf, param_distributions = random_grid, n_iter = 100, cv = 3, verbose=2, random_state=42, n_jobs = -1)
+# Builds the model with 100 trees
+rf = RandomForestRegressor(max_depth=20, random_state=42, n_estimators=100)
+rf.fit(array_x_train, array_y_train.ravel())
+preds_val = rf.predict(array_x_val)
+rfMSE = np.mean((preds_val-array_y_val.ravel())**2)  # Calculates the mean squared error
+rfMSE
+# 2.2195692014560251
+
+# It seems the random forest with 100 trees perform better.
 
 # Feature importance
 # Very interesting. The top 14 important features are not consistent
@@ -110,47 +117,54 @@ dic = {}
 for feature, importance in zip(x_train.columns, rf.feature_importances_):
     dic[feature] = importance 
 feature_importance = pd.DataFrame.from_dict(dic, orient='index', columns=['Importance'])
-feature_importance.sort_values(by = 'Importance',ascending=False).index[:15]
-#                                            Importance
-# totals.pageviews                             0.318297
-# totals.hits                                  0.139302
-# visitNumber                                  0.068849
-# g.country_United States                      0.058418
-# totals.newVisits                             0.019308
-# d.operatingSystem_Macintosh                  0.018313
-# t.source_mall.googleplex.com                 0.017421
-# month_Dec                                    0.014514
-# month_Aug                                    0.014007
-# month_May                                    0.013773
-# month_Jun                                    0.013259
-# d.operatingSystem_Windows                    0.013082
-# month_Apr                                    0.013076
-# g.metro_San Francisco-Oakland-San Jose CA    0.012845
-# t.isTrueDirect                               0.012820
-
-# Since it is too slow to do the k cross validation for random forest,
-# just use validation set to test the performance.
-preds_val = rf.predict(array_x_val)
-rfMSE = np.mean((preds_val-array_y_val)**2)
-rfMSE
-# 3.0893678915112712
-
-# 6. SVR
-clf = SVR(gamma='scale', C=1.0, epsilon=0.2)
-clf.fit(array_x_train, array_y_train)
+feature_importance.sort_values(by = 'Importance',ascending=False)[:10]
+#                              Importance
+# totals.pageviews               0.266356
+# totals.timeOnSite              0.175676
+# totals.hits                    0.084525
+# g.country_United States        0.066195
+# totals.sessionQualityDim       0.058745
+# visitNumber                    0.046025
+# channel_Referral               0.020272
+# totals.newVisits               0.014539
+# month_Aug                      0.010563
+# d.operatingSystem_Macintosh    0.010466
 
 # Final submission
-# Since it seems the random forest achieves the lowest validation MSE,
-# use random forest to build the final model.
-rf = RandomForestRegressor(max_depth=20, random_state=42, n_estimators=50)
-array_x_all = np.concatenate((array_x_train,array_x_val),axis=0)
-array_y_all = np.concatenate((array_y_train,array_y_val),axis=0)
-rf.fit(array_x_all, array_y_all.ravel())
+# We use all the training data to train the final model
+# 1. Ordinary Linear Regression
+ols.fit(array_x_all, array_y_all)
 preds = rf.predict(array_x_test)
+preds[preds<0] = 0
 sub_df = pd.DataFrame({"fullVisitorId":raw_test_id})
 sub_df["PredictedLogRevenue"] = np.expm1(preds)
 sub_df = sub_df.groupby("fullVisitorId")["PredictedLogRevenue"].sum().reset_index()
 sub_df.columns = ["fullVisitorId", "PredictedLogRevenue"]
 sub_df["PredictedLogRevenue"] = np.log1p(sub_df["PredictedLogRevenue"])
-sub_df.to_csv("rf_1109.csv", index=False)    # Score:1.54
+#sub_df.to_csv("../data/result_ols.csv", index=False)   # Score: 2.22
+
+# 2. Spline
+x_sub_all = pd.concat([sub_x_train, x_val[sub_cols]], axis=0)
+y_train_all = pd.concat([y_train, y_val], axis=0)
+spline.fit(x_sub_all, y_train_all)
+preds = rf.predict(x_test[sub_cols])
+preds[preds<0] = 0
+sub_df = pd.DataFrame({"fullVisitorId":raw_test_id})
+sub_df["PredictedLogRevenue"] = np.expm1(preds)
+sub_df = sub_df.groupby("fullVisitorId")["PredictedLogRevenue"].sum().reset_index()
+sub_df.columns = ["fullVisitorId", "PredictedLogRevenue"]
+sub_df["PredictedLogRevenue"] = np.log1p(sub_df["PredictedLogRevenue"])
+#sub_df.to_csv("data/result_spline.csv", index=False)    # Score: 1.93
+
+# 3. Random Forest
+# We use random forest with 100 trees to build the final model.
+rf.fit(array_x_all, array_y_all.ravel())
+preds = rf.predict(array_x_test)
+preds[preds<0] = 0
+sub_df = pd.DataFrame({"fullVisitorId":raw_test_id})
+sub_df["PredictedLogRevenue"] = np.expm1(preds)
+sub_df = sub_df.groupby("fullVisitorId")["PredictedLogRevenue"].sum().reset_index()
+sub_df.columns = ["fullVisitorId", "PredictedLogRevenue"]
+sub_df["PredictedLogRevenue"] = np.log1p(sub_df["PredictedLogRevenue"])
+#sub_df.to_csv("../data/rf_1111_v2.csv", index=False)    # Score: 1.778
 
