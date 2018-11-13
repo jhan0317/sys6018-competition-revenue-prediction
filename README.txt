@@ -11,7 +11,6 @@ Have at MINIMUM one parametric model:
 1. Ordinary Least Square regression
 2. Spline-based regression
 3. Random forest
-4. Nonlinear SVM
 
 # BONUS
 Get a good score on the parametric linear model modeling for bonus credit
@@ -21,10 +20,10 @@ Random forest: 1.54 (old datasets), 1.778 (new datasets)
 
 # FILES
 Code:
-The competition has changed rules several days ago. We have made submissions before and after the change.
+The competition has changed rules several days ago. We have made submissions before and after the change
 Therefore we split the code into two files: 
-code_old: contains the code applied to the original datasets, 
-code_new: contains the code applied to the updated datasets.
+code_old: contains the code applied to the original datasets 
+code_new: contains the code applied to the updated datasets
 Submission: All of the final submissions for Kaggle
 
 # DATA:
@@ -47,7 +46,10 @@ https://drive.google.com/open?id=1M1bk-_DDEJxfOb7HrCpxgM712CoAm9zU
 # model_new.py: Inputs: outputs from prepocessing. Train and build the model.
 
 # submission
-# rf_1108.csv: Best performance on old data sets. (Score: 1.54)
-# rf_1111_v2.csv: Best performance on new data sets. (Score: 1.778)
-# result_ols.csv: Result from ordinary least square regression.
-# result_spline.csv: Result from spline.
+# rf_1108.csv: Best performance on old data sets (Score: 1.54)
+# rf_1111_v2.csv: Best performance on new data sets (Score: 1.778)
+# result_ols.csv: Result from ordinary least square regression
+# result_spline.csv: Result from spline
+
+# report
+Contains the answer to the questions.
