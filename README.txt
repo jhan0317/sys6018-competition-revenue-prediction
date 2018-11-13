@@ -17,7 +17,7 @@ Have at MINIMUM one parametric model:
 Get a good score on the parametric linear model modeling for bonus credit
 
 # RESULTS
-Random forest: 1.54 (old datasets), 1.77 (new datasets)
+Random forest: 1.54 (old datasets), 1.778 (new datasets)
 
 # FILES
 Code:
@@ -25,7 +25,7 @@ The competition has changed rules several days ago. We have made submissions bef
 Therefore we split the code into two files: 
 code_old: contains the code applied to the original datasets, 
 code_new: contains the code applied to the updated datasets.
-final_submission: All of the final submissions for Kaggle
+Submission: All of the final submissions for Kaggle
 
 # DATA:
 Most datasets are too large to be uploaded to gitHub. We decided to store all the data in the Google Drive.
@@ -46,5 +46,8 @@ https://drive.google.com/open?id=1M1bk-_DDEJxfOb7HrCpxgM712CoAm9zU
 # preprocessing_new.py: Inputs: train_df_v2.csv, test_df_v2.csv  Conduct data prepocesing and split the data into training set and validation set Outputs: x_train_v2.csv, x_validation_v2.csv, y_train_v2.csv, y_validation_v2.csv, y_test_v2.csv
 # model_new.py: Inputs: outputs from prepocessing. Train and build the model.
 
-# Final_submission
-# blog_result_1009_V4.csv: the result with best score
+# submission
+# rf_1108.csv: Best performance on old data sets. (Score: 1.54)
+# rf_1111_v2.csv: Best performance on new data sets. (Score: 1.778)
+# result_ols.csv: Result from ordinary least square regression.
+# result_spline.csv: Result from spline.
