@@ -45,6 +45,9 @@ https://drive.google.com/open?id=1M1bk-_DDEJxfOb7HrCpxgM712CoAm9zU
 # preprocessing_new.py: Inputs: train_df_v2.csv, test_df_v2.csv  Conduct data prepocesing and split the data into training set and validation set Outputs: x_train_v2.csv, x_validation_v2.csv, y_train_v2.csv, y_validation_v2.csv, y_test_v2.csv
 # model_new.py: Inputs: outputs from prepocessing. Train and build the model.
 
+# screenshots
+Screenshots for submissions of the results from all the models
+
 # submission
 # rf_1108.csv: Best performance on old data sets (Score: 1.54)
 # rf_1111_v2.csv: Best performance on new data sets (Score: 1.778)
