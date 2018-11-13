@@ -52,4 +52,4 @@ https://drive.google.com/open?id=1M1bk-_DDEJxfOb7HrCpxgM712CoAm9zU
 # result_spline.csv: Result from spline
 
 # report
-Contains the answer to the questions.
+Contains the answer to the questions
