@@ -33,13 +33,18 @@ https://drive.google.com/open?id=1M1bk-_DDEJxfOb7HrCpxgM712CoAm9zU
                      
 # code_old
 # Uses data in the old_data folder in Drive.
-# JSON_formatting.py: Reads in the raw dataset 
-# initial_data_analysis.py: Reads in the raw dataset and finds trends in the text data, specifically in relation to the 'age' variable
-# data_cleaning.py: Reads in the raw dataset and conducts data prepocessing
-# text_mining.py: Reads in the raw dataset, aggregates the dataset and conducts basic text cleaning
-# tfidf.R: Reads in the cleaned text and calculates the term frequency-inverse document frequency
-# linear_model.py: Reads in the cleaned data and tfidf data. Builds the final model based off of analysis conducted in other .py files
+# JSON_formatting.py: Inputs: raw data sets. Format JSON data. Outputs: train.csv, test.csv
+* Since the datasets have been updated, the raw old datasets are no longer available.
+# exploration_old.ipynb: Inputs: train.csv, test.csv Conduct exploration analysis and create some plots
+# preprocessing_old.py: Inputs: train.csv, test.csv Conduct data prepocesing and split the data into training set and validation set Outputs: x_train.csv, x_validation.csv, y_train.csv, y_validation.csv, y_test.csv
+# model_old.py: Inputs: outputs from prepocessing Train and build the model.
 
+# code_new
+# Uses data in the new_data folder in Drive.
+# JSON_formatting.py: Inputs: raw data sets. Format JSON data. Outputs: train_df_v2.csv, test_df_v2.csv
+# exploration_new.ipynb: Inputs: train_df_v2.csv, test_df_v2.csv Conduct exploration analysis and create some plots
+# preprocessing_new.py: Inputs: train_df_v2.csv, test_df_v2.csv  Conduct data prepocesing and split the data into training set and validation set Outputs: x_train_v2.csv, x_validation_v2.csv, y_train_v2.csv, y_validation_v2.csv, y_test_v2.csv
+# model_new.py: Inputs: outputs from prepocessing Train and build the model.
 
 # Final_submission
 # blog_result_1009_V4.csv: the result with best score
