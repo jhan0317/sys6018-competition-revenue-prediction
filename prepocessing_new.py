@@ -1,13 +1,14 @@
-
 import os
 import pandas as pd
 import numpy as np
 
-# Reads in the data sets
-# 'trafficSource.campaignCode' is not in the test set.
-os.chdir("/Users/chloe/Desktop/UVa/Courses/SYS6018/Exercises/Kaggle/Google/code")
+# Reads in a few rows to check the data 
 head = pd.read_csv("../data/train_df_v2.csv", nrows=2)
 use_cols = list(head.columns)
+# Since 'trafficSource.campaignCode' is not in the test set, we do not load 
+# this column.
+# "hits" and "customDimensions" are large in size. Considering the other columns
+# contain the similar information, we decided not to load them.
 drop_cols = ['Unnamed: 0', 'customDimensions', 'hits', 'trafficSource.campaignCode']
 use_cols = [col for col in use_cols if col not in drop_cols]
 raw_train = pd.read_csv("../data/train_df_v2.csv", usecols=use_cols)  # (1708337, 57)
@@ -130,20 +131,11 @@ dic = {'01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'J
 date_str = [str(date) for date in all_data['date']]
 all_data['month'] = [dic[date[4:6]] for date in date_str]
 
-# Creates a new feature to indicate whether the id is shared between training set and
-# test set
-train_id = list(set(raw_train['fullVisitorId']))  # 1371486 unique ID in training set
-test_id = list(set(raw_test['fullVisitorId']))    # 300364 unique ID in testing set
-inter_id = list(set(train_id).intersection(test_id))  # Only 2623 test IDs are in train's ID list
-array_id = np.array(all_data['Id'])        # Converts to array in order to speed up the process
-array_inter = np.array(inter_id)
-lis = [1 if value in array_inter else 0 for value in array_id]
-all_data['isCommonId'] = lis
 
 # Converts the True/False to 1/0.
 all_data['d.isMobile'] = all_data['d.isMobile'].astype(int)
 
-all_data.shape  # (2109926, 30)
+all_data.shape  # (2109926, 29)
 
 t = all_data.nunique()[all_data.nunique() > 10]
 # date                            806
@@ -182,7 +174,6 @@ def keep_top_values(column, k=0, value_list=None):
             newCol[i] = 'Others'
     return newCol
 
-
 all_data['d.browser'] = keep_top_values('d.browser', 3)  # Only keeps the top 3 values in device.browser
 all_data['d.operatingSystem'] = keep_top_values('d.operatingSystem', 6)  # Only keeps the top 6 values in device.browser
 city_list = ['New York', 'Mountain View', 'San Francisco', 'Sunnyvale', 'Chicago']
@@ -204,21 +195,22 @@ all_data = all_data.drop(['Id', 'g.networkDomain', 'g.region', 'g.subContinent',
 
 
 date = all_data['date']
-all_data = all_data.drop(['date'], axis=1)  # (2109926, 24)
+all_data = all_data.drop(['date'], axis=1)  # (2109926, 23)
 
 # Convert the categorical data to dummy variables.
-dummies_data = pd.get_dummies(all_data)     # (2109926, 78)
+dummies_data = pd.get_dummies(all_data)     # (2109926, 77)
 
 # Splits the train set and test set
-x_train = dummies_data.iloc[0:len(raw_train), ]    # (1708337, 78)
-x_test = dummies_data.iloc[len(raw_train):, ]      # (401589, 78)
+x_train = dummies_data.iloc[0:len(raw_train), ]    # (1708337, 77)
+x_test = dummies_data.iloc[len(raw_train):, ]      # (401589, 77)
 
 # Splits the train set and validation set
 y_train = y_train.fillna(0)
-x_train = x_train[date < 20180301]  # (1531647, 78)
-y_train = y_train[date < 20180301]  # (1531647,)
-x_val = x_train[date >= 20180301]   # (176690, 78)
+x_val = x_train[date >= 20180301]   # (176690, 77)
 y_val = y_train[date >= 20180301]   # (176690,)
+x_train = x_train[date < 20180301]  # (1531647, 77)
+y_train = y_train[date < 20180301]  # (1531647,)
+
 
 x_train.to_csv("../data/x_train_v2.csv",  index=False)
 x_val.to_csv("../data/x_validation_v2.csv", index=False)
